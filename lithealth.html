@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Language Learning</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .language-selector {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .language-selector h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .language-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .lang-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .tracks-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .track {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .track-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .track-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-right: 20px;
+            color: white;
+        }
+
+        .track-foundation .track-icon { background: #6f42c1; }
+        .track-appointments .track-icon { background: #4ECDC4; }
+        .track-pharmacy .track-icon { background: #45B7D1; }
+        .track-transportation .track-icon { background: #96CEB4; }
+        .track-symptoms .track-icon { background: #FFEAA7; }
+        .track-emergency .track-icon { background: #FF6B6B; }
+
+        .track-info h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .track-description {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .modules-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .module-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .module-card:hover {
+            border-color: #667eea;
+            background: #f0f8ff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .module-number {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .module-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        .module-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .word-count {
+            background: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            display: inline-block;
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+
+        /* Module Content Styles */
+        .module-content {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+
+        .content-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f8f9fa;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-icon {
+            margin-right: 10px;
+            font-size: 1.3rem;
+        }
+
+        .words-section {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .word-category {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .category-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .words-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .word-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .word-card:hover {
+            border-color: #667eea;
+            background: #f0f8ff;
+            transform: translateY(-2px);
+        }
+
+        .word-english {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .word-translation {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .play-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .play-btn:hover {
+            background: #5a67d8;
+            transform: scale(1.1);
+        }
+
+        .phrases-list, .responses-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .phrase-card, .response-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .phrase-card:hover, .response-card:hover {
+            border-color: #667eea;
+            background: #f0f8ff;
+        }
+
+        .response-card {
+            background: #fff9e6;
+            border-color: #ffd700;
+        }
+
+        .response-card:hover {
+            border-color: #ffb700;
+            background: #fff5cc;
+        }
+
+        .phrase-english {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .phrase-translation {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .phrase-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 1px;
+            margin: 40px 0;
+        }
+
+        @media (max-width: 768px) {
+            .modules-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .words-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .module-content {
+                padding: 20px;
+            }
+
+            .track {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Healthcare Language Learning</h1>
+            <p>Learn essential English for healthcare navigation</p>
+        </div>
+
+        <div class="language-selector">
+            <h3>Select Your Language / اختر لغتك / Escoge tu idioma</h3>
+            <div class="language-buttons">
+                <button class="lang-btn active" data-lang="spanish">Español</button>
+                <button class="lang-btn" data-lang="arabic">العربية</button>
+                <button class="lang-btn" data-lang="french">Français</button>
+                <button class="lang-btn" data-lang="somali">Soomaali</button>
+                <button class="lang-btn" data-lang="farsi">فارسی</button>
+            </div>
+        </div>
+
+        <div class="tracks-container" id="tracks-container">
+            
+            <!-- Foundation Track -->
+            <div class="track track-foundation">
+                <div class="track-header">
+                    <div class="track-icon">🔢</div>
+                    <div class="track-info">
+                        <h2>Foundation</h2>
+                        <p class="track-description">Essential numbers, days, and times</p>
+                    </div>
+                </div>
+                <div class="modules-row">
+                    <div class="module-card" data-module="foundation">
+                        <div class="module-number">F</div>
+                        <div class="module-title">Numbers, Days & Times</div>
+                        <div class="module-subtitle">Numbers 1-30, 40-100, days of week, times of day</div>
+                        <div class="word-count">Foundation vocabulary</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Track -->
+            <div class="track track-appointments">
+                <div class="track-header">
+                    <div class="track-icon">📅</div>
+                    <div class="track-info">
+                        <h2>Appointments</h2>
+                        <p class="track-description">Schedule and manage doctor appointments</p>
+                    </div>
+                </div>
+                <div class="modules-row">
+                    <div class="module-card" data-module="appointments-1">
+                        <div class="module-number">1</div>
+                        <div class="module-title">Initial Request Vocabulary</div>
+                        <div class="module-subtitle">Words for asking for appointments + action phrases</div>
+                        <div class="word-count">Vocab + phrases</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-module="appointments-2">
+                        <div class="module-number">2</div>
+                        <div class="module-title">Reception Responses</div>
+                        <div class="module-subtitle">Understanding what reception says + new vocabulary</div>
+                        <div class="word-count">Responses + new vocab</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-module="appointments-3">
+                        <div class="module-number">3</div>
+                        <div class="module-title">Your Follow-up Responses</div>
+                        <div class="module-subtitle">How to respond to reception + final vocabulary</div>
+                        <div class="word-count">Your responses + vocab</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pharmacy Track -->
+            <div class="track track-pharmacy">
+                <div class="track-header">
+                    <div class="track-icon">💊</div>
+                    <div class="track-info">
+                        <h2>Pharmacy</h2>
+                        <p class="track-description">Get prescriptions and refills</p>
+                    </div>
+                </div>
+                <div class="modules-row">
+                    <div class="module-card" data-module="pharmacy-1">
+                        <div class="module-number">1</div>
+                        <div class="module-title">Initial Request Vocabulary</div>
+                        <div class="module-subtitle">Words for requesting refills + action phrases</div>
+                        <div class="word-count">Vocab + phrases</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-module="pharmacy-2">
+                        <div class="module-number">2</div>
+                        <div class="module-title">Pharmacist Responses</div>
+                        <div class="module-subtitle">Understanding pharmacist questions + new vocabulary</div>
+                        <div class="word-count">Responses + new vocab</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-module="pharmacy-3">
+                        <div class="module-number">3</div>
+                        <div class="module-title">Your Follow-up Responses</div>
+                        <div class="module-subtitle">How to respond to pharmacist + final vocabulary</div>
+                        <div class="word-count">Your responses + vocab</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transportation Track -->
+            <div class="track track-transportation">
+                <div class="track-header">
+                    <div class="track-icon">🚗</div>
+                    <div class="track-info">
+                        <h2>Transportation</h2>
+                        <p class="track-description">Request medical transportation</p>
+                    </div>
+                </div>
+                <div class="modules-row">
+                    <div class="module-card" data-module="transportation-1">
+                        <div class="module-number">1</div>
+                        <div class="module-title">Initial Request Vocabulary</div>
+                        <div class="module-subtitle">Words for requesting rides + action phrases</div>
+                        <div class="word-count">Vocab + phrases</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-module="transportation-2">
+                        <div class="module-number">2</div>
+                        <div class="module-title">Dispatcher Responses</div>
+                        <div class="module-subtitle">Understanding dispatcher questions + new vocabulary</div>
+                        <div class="word-count">Responses + new vocab</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-module="transportation-3">
+                        <div class="module-number">3</div>
+                        <div class="module-title">Your Follow-up Responses</div>
+                        <div class="module-subtitle">How to respond to dispatcher + final vocabulary</div>
+                        <div class="word-count">Your responses + vocab</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Symptoms Track -->
+            <div class="track track-symptoms">
+                <div class="track-header">
+                    <div class="track-icon">🤒</div>
+                    <div class="track-info">
+                        <h2>Symptoms</h2>
+                        <p class="track-description">Describe symptoms to medical staff</p>
+                    </div>
+                </div>
+                <div class="modules-row">
+                    <div class="module-card" data-module="symptoms-1">
+                        <div class="module-number">1</div>
+                        <div class="module-title">Initial Description Vocabulary</div>
+                        <div class="module-subtitle">Body parts, basic symptoms + action phrases</div>
+                        <div class="word-count">Vocab + phrases</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-module="symptoms-2">
+                        <div class="module-number">2</div>
+                        <div class="module-title">Medical Staff Responses</div>
+                        <div class="module-subtitle">Understanding doctor questions + new vocabulary</div>
+                        <div class="word-count">Responses + new vocab</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-module="symptoms-3">
+                        <div class="module-number">3</div>
+                        <div class="module-title">Your Follow-up Responses</div>
+                        <div class="module-subtitle">How to respond to doctor + final vocabulary</div>
+                        <div class="word-count">Your responses + vocab</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Track -->
+            <div class="track track-emergency">
+                <div class="track-header">
+                    <div class="track-icon">🚨</div>
+                    <div class="track-info">
+                        <h2>Emergency</h2>
+                        <p class="track-description">Handle emergency situations and 911 calls</p>
+                    </div>
+                </div>
+                <div class="modules-row">
+                    <div class="module-card" data-module="emergency-1">
+                        <div class="module-number">1</div>
+                        <div class="module-title">Initial Emergency Vocabulary</div>
+                        <div class="module-subtitle">Emergency words + initial action phrases</div>
+                        <div class="word-count">Vocab + phrases</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-module="emergency-2">
+                        <div class="module-number">2</div>
+                        <div class="module-title">911 Operator Responses</div>
+                        <div class="module-subtitle">Understanding 911 questions + new vocabulary</div>
+                        <div class="word-count">Responses + new vocab</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="module-card" data-module="emergency-3">
+                        <div class="module-number">3</div>
+                        <div class="module-title">Your Follow-up Responses</div>
+                        <div class="module-subtitle">How to respond to 911 + final vocabulary</div>
+                        <div class="word-count">Your responses + vocab</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Module Content (hidden by default) -->
+        <div class="module-content" id="module-content">
+            <div class="content-header">
+                <h2 id="module-content-title">Module Title</h2>
+                <button class="back-btn" onclick="showTracks()">← Back to Tracks</button>
+            </div>
+
+            <div class="section" id="words-section">
+                <h3 class="section-title">
+                    <span class="section-icon">📝</span>
+                    Vocabulary Words
+                </h3>
+                <div class="words-section" id="words-container">
+                    <!-- Words will be populated here -->
+                </div>
+            </div>
+
+            <div class="divider" id="phrases-divider"></div>
+
+            <div class="section" id="phrases-section">
+                <h3 class="section-title">
+                    <span class="section-icon">💬</span>
+                    <span id="phrases-title">Action Phrases</span>
+                </h3>
+                <div class="phrases-list" id="phrases-list">
+                    <!-- Phrases will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Language data
+        const translations = {
+            spanish: {
+                // Numbers 1-30
+                one: "uno", two: "dos", three: "tres", four: "cuatro", five: "cinco",
+                six: "seis", seven: "siete", eight: "ocho", nine: "nueve", ten: "diez",
+                eleven: "once", twelve: "doce", thirteen: "trece", fourteen: "catorce", fifteen: "quince",
+                sixteen: "dieciséis", seventeen: "diecisiete", eighteen: "dieciocho", nineteen: "diecinueve", twenty: "veinte",
+                "twenty-one": "veintiuno", "twenty-two": "veintidós", "twenty-three": "veintitrés", "twenty-four": "veinticuatro", "twenty-five": "veinticinco",
+                "twenty-six": "veintiséis", "twenty-seven": "veintisiete", "twenty-eight": "veintiocho", "twenty-nine": "veintinueve", thirty: "treinta",
+                // By 10s to 100
+                forty: "cuarenta", fifty: "cincuenta", sixty: "sesenta", seventy: "setenta", eighty: "ochenta", ninety: "noventa", hundred: "cien",
+                // Days of week
+                monday: "lunes", tuesday: "martes", wednesday: "miércoles", thursday: "jueves", friday: "viernes", saturday: "sábado", sunday: "domingo",
+                // Times of day
+                morning: "mañana", afternoon: "tarde", evening: "noche", night: "noche", am: "de la mañana", pm: "de la tarde",
+                // Appointments
+                doctor: "doctor", appointment: "cita", call: "llamar", need: "necesitar", want: "querer", schedule: "programar",
+                receptionist: "recepcionista", available: "disponible", confirm: "confirmar", patient: "paciente", new: "nuevo", existing: "existente",
+                arrive: "llegar", early: "temprano", insurance: "seguro", card: "tarjeta", id: "identificación",
+                // Pharmacy
+                medicine: "medicina", pharmacy: "farmacia", prescription: "receta", refill: "rellenar", ready: "listo", pickup: "recoger",
+                pharmacist: "farmacéutico", cost: "costo", price: "precio", generic: "genérico", brand: "marca", copay: "copago",
+                // Transportation
+                ride: "viaje", transportation: "transporte", pickup: "recogida", address: "dirección", location: "ubicación", destination: "destino",
+                dispatcher: "operador", driver: "conductor", outside: "afuera", wheelchair: "silla de ruedas", assistance: "asistencia",
+                // Symptoms
+                head: "cabeza", chest: "pecho", stomach: "estómago", back: "espalda", arm: "brazo", leg: "pierna",
+                pain: "dolor", hurt: "duele", sick: "enfermo", feel: "sentir", fever: "fiebre", cough: "tos",
+                sharp: "agudo", dull: "sordo", severe: "severo", mild: "leve", constant: "constante", scale: "escala",
+                // Emergency
+                emergency: "emergencia", "911": "nueve-uno-uno", ambulance: "ambulancia", help: "ayuda", urgent: "urgente", serious: "serio",
+                operator: "operador", location: "ubicación", breathing: "respirando", conscious: "consciente", bleeding: "sangrando"
+            }
+        };
+
+        const moduleData = {
+            "foundation": {
+                title: "Foundation: Numbers, Days & Times",
+                wordCategories: {
+                    "Numbers 1-30": ["one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty", "twenty-one", "twenty-two", "twenty-three", "twenty-four", "twenty-five", "twenty-six", "twenty-seven", "twenty-eight", "twenty-nine", "thirty"],
+                    "Numbers by 10s": ["forty", "fifty", "sixty", "seventy", "eighty", "ninety", "hundred"],
+                    "Days of the Week": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+                    "Times of Day": ["morning", "afternoon", "evening", "night", "am", "pm"]
+                },
+                phrases: [
+                    "It is five PM",
+                    "Tomorrow is Wednesday",
+                    "Today is Monday",
+                    "It is nine AM",
+                    "Next Friday",
+                    "This afternoon"
+                ]
+            },
+            "appointments-1": {
+                title: "Initial Request Vocabulary & Phrases",
+                words: ["doctor", "appointment", "call", "need", "want", "schedule"],
+                phrases: [
+                    "I need an appointment",
+                    "I want to see the doctor",
+                    "Can I schedule an appointment?",
+                    "I would like to make an appointment",
+                    "I need to call the doctor"
+                ]
+            },
+            "appointments-2": {
+                title: "Reception Responses & New Vocabulary",
+                words: ["receptionist", "available", "confirm", "patient", "new", "existing"],
+                responses: [
+                    "What's your name?",
+                    "Are you a new or existing patient?",
+                    "What doctor do you want to see?",
+                    "What days are available for you?",
+                    "We have Monday at 9 AM available",
+                    "I can confirm that appointment"
+                ]
+            },
+            "appointments-3": {
+                title: "Your Follow-up Responses & Final Vocabulary",
+                words: ["arrive", "early", "insurance", "card", "id"],
+                phrases: [
+                    "Yes, I am a new patient",
+                    "Monday at 9 AM works for me",
+                    "I have insurance",
+                    "I will arrive early",
+                    "I will bring my insurance card and ID"
+                ]
+            },
+            "pharmacy-1": {
+                title: "Initial Request Vocabulary & Phrases",
+                words: ["medicine", "pharmacy", "prescription", "refill", "ready", "pickup"],
+                phrases: [
+                    "I need to refill my prescription",
+                    "Is my medicine ready?",
+                    "I want to pick up my prescription",
+                    "I need my medicine refilled",
+                    "Can I get a refill?"
+                ]
+            },
+            "pharmacy-2": {
+                title: "Pharmacist Responses & New Vocabulary",
+                words: ["pharmacist", "cost", "price", "generic", "brand", "copay"],
+                responses: [
+                    "What's the patient's name?",
+                    "What medication do you need?",
+                    "It will be ready in 20 minutes",
+                    "The cost is $15",
+                    "Do you want generic or brand?",
+                    "Your copay is $10"
+                ]
+            },
+            "transportation-1": {
+                title: "Initial Request Vocabulary & Phrases",
+                words: ["ride", "transportation", "pickup", "address", "location", "destination"],
+                phrases: [
+                    "I need a ride",
+                    "I need medical transportation",
+                    "Can you pick me up?",
+                    "My address is...",
+                    "I need to go to the clinic"
+                ]
+            },
+            "symptoms-1": {
+                title: "Initial Description Vocabulary & Phrases",
+                words: ["head", "chest", "stomach", "back", "arm", "leg", "pain", "hurt", "sick", "feel", "fever", "cough"],
+                phrases: [
+                    "My head hurts",
+                    "I have chest pain",
+                    "My stomach hurts",
+                    "I feel sick",
+                    "I have a fever",
+                    "I have been coughing"
+                ]
+            },
+            "emergency-1": {
+                title: "Initial Emergency Vocabulary & Phrases",
+                words: ["emergency", "911", "ambulance", "help", "urgent", "serious"],
+                phrases: [
+                    "This is an emergency",
+                    "I need to call 911",
+                    "Send an ambulance",
+                    "I need help",
+                    "This is urgent",
+                    "This is serious"
+                ]
+            }
+        };
+
+        let currentLanguage = 'spanish';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupLanguageButtons();
+            setupModuleCards();
+        });
+
+        function setupLanguageButtons() {
+            const langButtons = document.querySelectorAll('.lang-btn');
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    langButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentLanguage = this.dataset.lang;
+                });
+            });
+        }
+
+        function setupModuleCards() {
+            const moduleCards = document.querySelectorAll('.module-card');
+            moduleCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const module = this.dataset.module;
+                    showModule(module);
+                });
+            });
+        }
+
+        function showModule(moduleKey) {
+            const module = moduleData[moduleKey];
+            if (!module) return;
+
+            document.getElementById('tracks-container').style.display = 'none';
+            document.getElementById('module-content').style.display = 'block';
+            document.getElementById('module-content-title').textContent = module.title;
+
+            // Show appropriate sections based on module type
+            if (module.wordCategories) {
+                // Foundation module
+                populateWordCategories(module.wordCategories);
+                document.getElementById('phrases-title').textContent = 'Time Phrases';
+                populatePhrases(module.phrases, 'phrases');
+                showSection('words-section');
+                showSection('phrases-divider');
+                showSection('phrases-section');
+            } else if (module.words && module.phrases) {
+                // Module 1 type: vocab + action phrases
+                populateWords(module.words);
+                document.getElementById('phrases-title').textContent = 'Action Phrases';
+                populatePhrases(module.phrases, 'phrases');
+                showSection('words-section');
+                showSection('phrases-divider');
+                showSection('phrases-section');
+            } else if (module.words && module.responses) {
+                // Module 2 type: new vocab + responses
+                populateWords(module.words);
+                document.getElementById('phrases-title').textContent = 'Responses You\'ll Hear';
+                populatePhrases(module.responses, 'responses');
+                showSection('words-section');
+                showSection('phrases-divider');
+                showSection('phrases-section');
+            } else if (module.words && module.phrases) {
+                // Module 3 type: final vocab + your responses
+                populateWords(module.words);
+                document.getElementById('phrases-title').textContent = 'Your Responses';
+                populatePhrases(module.phrases, 'phrases');
+                showSection('words-section');
+                showSection('phrases-divider');
+                showSection('phrases-section');
+            }
+        }
+
+        function showSection(sectionId) {
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        function showTracks() {
+            document.getElementById('tracks-container').style.display = 'flex';
+            document.getElementById('module-content').style.display = 'none';
+        }
+
+        function populateWordCategories(categories) {
+            const wordsContainer = document.getElementById('words-container');
+            wordsContainer.innerHTML = '';
+
+            Object.entries(categories).forEach(([categoryName, words]) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'word-category';
+                
+                const categoryTitle = document.createElement('h4');
+                categoryTitle.className = 'category-title';
+                categoryTitle.textContent = categoryName;
+                categoryDiv.appendChild(categoryTitle);
+
+                const wordsGrid = document.createElement('div');
+                wordsGrid.className = 'words-grid';
+
+                words.forEach(word => {
+                    const translation = translations[currentLanguage]?.[word] || word;
+                    
+                    const wordCard = document.createElement('div');
+                    wordCard.className = 'word-card';
+                    wordCard.innerHTML = `
+                        <div class="word-english">${word}</div>
+                        <div class="word-translation">${translation}</div>
+                        <button class="play-btn" onclick="speakWord('${word}')">▶</button>
+                    `;
+                    
+                    wordsGrid.appendChild(wordCard);
+                });
+
+                categoryDiv.appendChild(wordsGrid);
+                wordsContainer.appendChild(categoryDiv);
+            });
+        }
+
+        function populateWords(words) {
+            const wordsContainer = document.getElementById('words-container');
+            wordsContainer.innerHTML = '';
+
+            const wordsGrid = document.createElement('div');
+            wordsGrid.className = 'words-grid';
+            wordsGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(150px, 1fr))';
+
+            words.forEach(word => {
+                const translation = translations[currentLanguage]?.[word] || word;
+                
+                const wordCard = document.createElement('div');
+                wordCard.className = 'word-card';
+                wordCard.innerHTML = `
+                    <div class="word-english">${word}</div>
+                    <div class="word-translation">${translation}</div>
+                    <button class="play-btn" onclick="speakWord('${word}')">▶</button>
+                `;
+                
+                wordsGrid.appendChild(wordCard);
+            });
+
+            wordsContainer.appendChild(wordsGrid);
+        }
+
+        function populatePhrases(phrases, type) {
+            const phrasesList = document.getElementById('phrases-list');
+            phrasesList.innerHTML = '';
+
+            phrases.forEach(phrase => {
+                const translation = translatePhrase(phrase);
+                
+                const phraseCard = document.createElement('div');
+                phraseCard.className = type === 'responses' ? 'response-card' : 'phrase-card';
+                phraseCard.innerHTML = `
+                    <div class="phrase-english">${phrase}</div>
+                    <div class="phrase-translation">${translation}</div>
+                    <div class="phrase-controls">
+                        <button class="play-btn" onclick="speakPhrase('${phrase}')">▶</button>
+                    </div>
+                `;
+                
+                phrasesList.appendChild(phraseCard);
+            });
+        }
+
+        function translatePhrase(phrase) {
+            const phraseTranslations = {
+                spanish: {
+                    "It is five PM": "Son las cinco PM",
+                    "Tomorrow is Wednesday": "Mañana es miércoles",
+                    "Today is Monday": "Hoy es lunes",
+                    "It is nine AM": "Son las nueve AM",
+                    "Next Friday": "El próximo viernes",
+                    "This afternoon": "Esta tarde",
+                    "I need an appointment": "Necesito una cita",
+                    "I want to see the doctor": "Quiero ver al doctor",
+                    "Can I schedule an appointment?": "¿Puedo programar una cita?",
+                    "I would like to make an appointment": "Me gustaría hacer una cita",
+                    "I need to call the doctor": "Necesito llamar al doctor",
+                    "What's your name?": "¿Cuál es su nombre?",
+                    "Are you a new or existing patient?": "¿Es un paciente nuevo o existente?",
+                    "What doctor do you want to see?": "¿Qué doctor quiere ver?",
+                    "What days are available for you?": "¿Qué días están disponibles para usted?",
+                    "We have Monday at 9 AM available": "Tenemos lunes a las 9 AM disponible",
+                    "I can confirm that appointment": "Puedo confirmar esa cita"
+                }
+            };
+
+            return phraseTranslations[currentLanguage]?.[phrase] || phrase;
+        }
+
+        function speakWord(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.7;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        function speakPhrase(phrase) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(phrase);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.7;
+                speechSynthesis.speak(utterance);
+            }
+        }
+    </script>
+</body>
+</html>
